@@ -1,2 +1,2 @@
-# gsm_power_switch
+# Gsm power switch
 SIM900GSM based SMS switch for electrical device
