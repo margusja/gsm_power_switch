@@ -8,8 +8,8 @@ String message = "";
 
 void send_message(String message)
 {
-  gsm.println("AT+CMGF=1");    //Set the GSM Module in Text Mode
-  delay(100);  
+  // gsm.println("AT+CMGF=1");    //Set the GSM Module in Text Mode
+  // delay(100);  
   gsm.println("AT+CMGS=\"+3725148780\""); // Replace it with your mobile number
   delay(100);
   gsm.println(message);   // The SMS text you want to send
@@ -17,14 +17,15 @@ void send_message(String message)
   gsm.println((char)26);  // ASCII code of CTRL+Z
   delay(100);
   gsm.println();
-  delay(1000);  
+  delay(5000);  
 }
 
 void showSMS()
 {
- gsm.print("AT+CMGF=1\r");
- gsm.print("AT+CNMI=2,2,0,0,0\r");
- delay(1000);
+//  gsm.print("AT+CMGF=1\r");
+//  delay(100);
+//  gsm.print("AT+CNMI=2,2,0,0,0\r");
+//  delay(1000);
  msg = "";
  while(gsm.available() > 0)
  {
@@ -36,8 +37,7 @@ void showSMS()
 void setup() {
   gsm.begin(9600);
   Serial.begin(9600);
-  Serial.println("PUMP CONTROL");
-  Serial.println("t : to receive text");
+  Serial.println("GSM module is ready to serve you Sir!");
   delay(1000);
 
   pinMode(LED, OUTPUT);
@@ -49,18 +49,12 @@ void setup() {
   
   // set gsm module to tp show the output on serial out
   gsm.print("AT+CNMI=2,2,0,0,0\r"); 
-  delay(100);
+  delay(100); 
 }
 
 void loop() {
 
   showSMS();
-
-
-  while(gsm.available() > 0)
-  {
-    Serial.write(gsm.read());
-  }
 
   if(msg.indexOf("turn_on")>=0)
   {
