@@ -1,6 +1,7 @@
 #include <Arduino.h>
 
 #include <SoftwareSerial.h>
+
 SoftwareSerial gsm(7,8);
 String msg;
 const int LED = 13;
@@ -25,13 +26,17 @@ void showSMS()
 //  gsm.print("AT+CMGF=1\r");
 //  delay(100);
 //  gsm.print("AT+CNMI=2,2,0,0,0\r");
-//  delay(1000);
+ delay(1000);
  msg = "";
  while(gsm.available() > 0)
  {
   msg = gsm.readString();
   Serial.println(msg);
+
+  // delete all sms's
+  // gsm.print("AT+CMGD=1,4\r");
  }
+
 }
 
 void setup() {
@@ -50,20 +55,23 @@ void setup() {
   // set gsm module to tp show the output on serial out
   gsm.print("AT+CNMI=2,2,0,0,0\r"); 
   delay(100); 
+
+  // delete all sms's
+  gsm.print("AT+CMGD=1,4\r");
 }
 
 void loop() {
 
   showSMS();
 
-  if(msg.indexOf("turn_on")>=0)
+  if(msg.indexOf("on")>=0)
   {
     digitalWrite(LED, HIGH);
     message = "Led is turned ON";
     // Send a sms back to confirm that the relay is turned on
     send_message(message);
   } 
-  if (msg.indexOf("turn_off")>=0)
+  if (msg.indexOf("off")>=0)
   {
     digitalWrite(LED, LOW);
     message = "Led is turned OFF";
