@@ -4,7 +4,8 @@
 
 SoftwareSerial gsm(7,8);
 String msg;
-const int LED = 13;
+const int RELAY = 12;
+const int STATUSLED = 13;
 String message = "";
 
 void send_message(String message)
@@ -50,8 +51,11 @@ void setup() {
   gsm.begin(9600);
   Serial.begin(9600);
 
-  pinMode(LED, OUTPUT);
-  digitalWrite(LED, HIGH);
+  pinMode(RELAY, OUTPUT);
+  digitalWrite(RELAY, HIGH);
+  
+  pinMode(STATUSLED, OUTPUT);
+  digitalWrite(STATUSLED, LOW);
 
   // set SMS mode to text mode
   gsm.print("AT+CMGF=1\r");
@@ -67,6 +71,8 @@ void setup() {
   gsm.print("AT+CMGD=1,4\r");
   delay(100);
   checkATCommand("Deleting SMS's is failed", "ALL SMS's deleted");
+
+  digitalWrite(STATUSLED, HIGH);
 }
 
 
@@ -76,14 +82,14 @@ void loop() {
 
   if(msg.indexOf("on")>=0)
   {
-    digitalWrite(LED, HIGH);
+    digitalWrite(RELAY, HIGH);
     message = "Led is turned ON";
     // Send a sms back to confirm that the relay is turned on
     send_message(message);
   } 
   if (msg.indexOf("off")>=0)
   {
-    digitalWrite(LED, LOW);
+    digitalWrite(RELAY, LOW);
     message = "Led is turned OFF";
     // Send a sms back to confirm that the relay is turned off
     send_message(message);
