@@ -23,42 +23,52 @@ void send_message(String message)
 
 void showSMS()
 {
-//  gsm.print("AT+CMGF=1\r");
-//  delay(100);
-//  gsm.print("AT+CNMI=2,2,0,0,0\r");
  delay(1000);
  msg = "";
  while(gsm.available() > 0)
  {
   msg = gsm.readString();
   Serial.println(msg);
-
-  // delete all sms's
-  // gsm.print("AT+CMGD=1,4\r");
  }
 
+}
+
+void(* resetFunc) (void) = 0; //declare reset function @ address 0
+
+void checkATCommand(String errorMessage, String okMessage) {
+    if (gsm.find("OK"))
+    Serial.println(okMessage);
+  else {
+    Serial.println(errorMessage);
+    Serial.println("Going to reset controller...");
+    delay(1000);
+    resetFunc();
+  }
 }
 
 void setup() {
   gsm.begin(9600);
   Serial.begin(9600);
-  Serial.println("GSM module is ready to serve you Sir!");
-  delay(1000);
 
   pinMode(LED, OUTPUT);
   digitalWrite(LED, HIGH);
 
-    // set SMS mode to text mode
-  gsm.print("AT+CMGF=1\r");  
-  delay(100);
+  // set SMS mode to text mode
+  gsm.print("AT+CMGF=1\r");
+  checkATCommand("Setting GSM module to text mode is failed", "GSM module is in text mode");
+ 
   
   // set gsm module to tp show the output on serial out
   gsm.print("AT+CNMI=2,2,0,0,0\r"); 
   delay(100); 
+  checkATCommand("Setting GSM module to serial out mode is failed", "GSM module is out serial mode");
 
   // delete all sms's
   gsm.print("AT+CMGD=1,4\r");
+  delay(100);
+  checkATCommand("Deleting SMS's is failed", "ALL SMS's deleted");
 }
+
 
 void loop() {
 
