@@ -1,5 +1,4 @@
 #include <Arduino.h>
-
 #include <SoftwareSerial.h>
 
 SoftwareSerial gsm(7,8);
@@ -10,8 +9,6 @@ String message = "";
 
 void send_message(String message)
 {
-  // gsm.println("AT+CMGF=1");    //Set the GSM Module in Text Mode
-  // delay(100);  
   gsm.println("AT+CMGS=\"+3725148780\""); // Replace it with your mobile number
   delay(100);
   gsm.println(message);   // The SMS text you want to send
@@ -48,8 +45,10 @@ void checkATCommand(String errorMessage, String okMessage) {
 }
 
 void setup() {
+  delay(15000);
   gsm.begin(9600);
   Serial.begin(9600);
+  delay(1000);
 
   pinMode(RELAY, OUTPUT);
   digitalWrite(RELAY, HIGH);
@@ -61,7 +60,6 @@ void setup() {
   gsm.print("AT+CMGF=1\r");
   checkATCommand("Setting GSM module to text mode is failed", "GSM module is in text mode");
  
-  
   // set gsm module to tp show the output on serial out
   gsm.print("AT+CNMI=2,2,0,0,0\r"); 
   delay(100); 
@@ -73,6 +71,7 @@ void setup() {
   checkATCommand("Deleting SMS's is failed", "ALL SMS's deleted");
 
   digitalWrite(STATUSLED, HIGH);
+  send_message("Relay is ready");
 }
 
 
@@ -80,19 +79,17 @@ void loop() {
 
   showSMS();
 
-  if(msg.indexOf("on")>=0)
+  if(msg.indexOf("o n")>=0)
   {
-    digitalWrite(RELAY, HIGH);
-    message = "Led is turned ON";
+    digitalWrite(RELAY, LOW);
     // Send a sms back to confirm that the relay is turned on
-    send_message(message);
+    send_message("Relay is turned ON");
   } 
   if (msg.indexOf("off")>=0)
   {
-    digitalWrite(RELAY, LOW);
-    message = "Led is turned OFF";
+    digitalWrite(RELAY, HIGH);
     // Send a sms back to confirm that the relay is turned off
-    send_message(message);
+    send_message("Relay is turned OFF");
   }
 
 
