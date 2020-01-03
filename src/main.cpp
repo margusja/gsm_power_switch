@@ -10,11 +10,11 @@ String message = "";
 void send_message(String message)
 {
   gsm.println("AT+CMGS=\"+3725148780\""); // Replace it with your mobile number
-  delay(100);
+  delay(1000);
   gsm.println(message);   // The SMS text you want to send
-  delay(100);
+  delay(1000);
   gsm.println((char)26);  // ASCII code of CTRL+Z
-  delay(100);
+  delay(1000);
   gsm.println();
   delay(5000);  
 }
@@ -34,7 +34,7 @@ void showSMS()
 void(* resetFunc) (void) = 0; //declare reset function @ address 0
 
 void checkATCommand(String errorMessage, String okMessage) {
-    if (gsm.find("OK"))
+  if (gsm.find("OK"))
     Serial.println(okMessage);
   else {
     Serial.println(errorMessage);
@@ -42,6 +42,7 @@ void checkATCommand(String errorMessage, String okMessage) {
     delay(1000);
     resetFunc();
   }
+  delay(100);
 }
 
 void setup() {
@@ -62,12 +63,10 @@ void setup() {
  
   // set gsm module to tp show the output on serial out
   gsm.print("AT+CNMI=2,2,0,0,0\r"); 
-  delay(100); 
   checkATCommand("Setting GSM module to serial out mode is failed", "GSM module is out serial mode");
 
   // delete all sms's
   gsm.print("AT+CMGD=1,4\r");
-  delay(100);
   checkATCommand("Deleting SMS's is failed", "ALL SMS's deleted");
 
   digitalWrite(STATUSLED, HIGH);
@@ -79,7 +78,7 @@ void loop() {
 
   showSMS();
 
-  if(msg.indexOf("o n")>=0)
+  if(msg.indexOf("on")>=0)
   {
     digitalWrite(RELAY, LOW);
     // Send a sms back to confirm that the relay is turned on
