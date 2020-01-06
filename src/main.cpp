@@ -6,6 +6,8 @@ String msg;
 const int RELAY = 12;
 const int STATUSLED = 13;
 String message = "";
+unsigned long startTime;
+#define STOP_HRS 7200000UL
 
 void send_message(String message)
 {
@@ -71,6 +73,8 @@ void setup() {
 
   digitalWrite(STATUSLED, HIGH);
   send_message("Relay is ready");
+
+  startTime = millis();
 }
 
 
@@ -78,8 +82,19 @@ void loop() {
 
   showSMS();
 
+  if (millis() - startTime > STOP_HRS && digitalRead(RELAY) == LOW)
+  {
+    digitalWrite(RELAY, HIGH);
+    // Send a sms back to confirm that the relay is turned off
+    send_message("Relay is forced to turn OFF");
+    Serial.println("Relay turned of due hours condition");
+
+    startTime = millis();
+  }
+
   if(msg.indexOf("on")>=0)
   {
+    startTime = millis();
     digitalWrite(RELAY, LOW);
     // Send a sms back to confirm that the relay is turned on
     send_message("Relay is turned ON");
