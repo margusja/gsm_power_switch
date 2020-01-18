@@ -27,10 +27,23 @@ void showSMS()
  msg = "";
  while(gsm.available() > 0)
  {
-  msg = gsm.readString();
-  Serial.println(msg);
- }
+  //msg = gsm.readString();
+  //Serial.println(msg); 
+  // if (count != 0)
+  //   digitalWrite(RELAY,  !digitalRead(RELAY));
 
+  // count++;
+
+  if (gsm.find("toggle")) {
+    Serial.println("toggle");
+    digitalWrite(RELAY,  !digitalRead(RELAY));
+
+    if (digitalRead(RELAY) == LOW)
+      send_message("Relay is ON");
+    if (digitalRead(RELAY) == HIGH)
+      send_message("Relay is OFF");
+  }
+ }
 }
 
 void(* resetFunc) (void) = 0; //declare reset function @ address 0
@@ -91,20 +104,5 @@ void loop() {
 
     startTime = millis();
   }
-
-  if(msg.indexOf("on")>=0)
-  {
-    startTime = millis();
-    digitalWrite(RELAY, LOW);
-    // Send a sms back to confirm that the relay is turned on
-    send_message("Relay is turned ON");
-  } 
-  if (msg.indexOf("off")>=0)
-  {
-    digitalWrite(RELAY, HIGH);
-    // Send a sms back to confirm that the relay is turned off
-    send_message("Relay is turned OFF");
-  }
-
 
 }
