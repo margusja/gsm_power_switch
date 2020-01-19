@@ -5,7 +5,6 @@ SoftwareSerial gsm(7,8);
 String msg;
 const int RELAY = 12;
 const int STATUSLED = 13;
-String message = "";
 unsigned long startTime;
 #define STOP_HRS 7200000UL
 
@@ -24,16 +23,8 @@ void send_message(String message)
 void showSMS()
 {
  delay(1000);
- msg = "";
  while(gsm.available() > 0)
  {
-  //msg = gsm.readString();
-  //Serial.println(msg); 
-  // if (count != 0)
-  //   digitalWrite(RELAY,  !digitalRead(RELAY));
-
-  // count++;
-
   if (gsm.find("toggle")) {
     Serial.println("toggle");
     digitalWrite(RELAY,  !digitalRead(RELAY));
@@ -61,16 +52,17 @@ void checkATCommand(String errorMessage, String okMessage) {
 }
 
 void setup() {
-  delay(15000);
-  gsm.begin(9600);
-  Serial.begin(9600);
-  delay(1000);
-
   pinMode(RELAY, OUTPUT);
   digitalWrite(RELAY, HIGH);
   
   pinMode(STATUSLED, OUTPUT);
   digitalWrite(STATUSLED, LOW);
+
+
+  delay(15000);
+  gsm.begin(9600);
+  Serial.begin(9600);
+  delay(1000);
 
   // set SMS mode to text mode
   gsm.print("AT+CMGF=1\r");
