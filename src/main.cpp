@@ -26,6 +26,7 @@ void showSMS()
  while(gsm.available() > 0)
  {
   if (gsm.find("toggle")) {
+    startTime = millis();
     Serial.println("toggle");
     digitalWrite(RELAY,  !digitalRead(RELAY));
 
